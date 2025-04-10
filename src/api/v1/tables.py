@@ -1,10 +1,12 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+
+from src.dependencies import get_table_service
 
 router = APIRouter(prefix='/tables', tags=['Tables'])
 
 @router.get('/')
-async def get_tables():
-	return {"message": "List of tables"}
+async def get_all_tables(_service=Depends(get_table_service)):
+	return await _service.get_all()
 
 @router.post('/')
 async def create_table(table: dict):

@@ -17,5 +17,6 @@ async def create_table(
 	return await _service.create(table)
 
 @router.delete('/{id}')
-async def delete_table(id: int):
-	return {"message": "Table deleted", "id": id}
+async def delete_table(id: int, _service=Depends(get_table_service)):
+	await _service.delete(id)
+	return {'message': 'Table deleted successfully'}

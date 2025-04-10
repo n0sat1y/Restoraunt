@@ -17,3 +17,12 @@ class TableRepository:
 			return tables
 		except Exception as e:
 			raise HTTPException(status_code=500, detail=str(e))
+		
+	async def create(self, table: dict):
+		try:
+			new_table = TableModel(**table)
+			self.session.add(new_table)
+			await self.session.commit()
+			return new_table
+		except Exception as e:
+			raise HTTPException(status_code=500, detail=str(e))

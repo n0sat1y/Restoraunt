@@ -1,10 +1,12 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+
+from src.dependencies import get_reservation_service
 
 router = APIRouter(prefix='/reservations', tags=['Reservations'])
 
 @router.get('/')
-async def get_reservations():
-	return {"message": "List of reservations"}
+async def get_all_reservations(_service=Depends(get_reservation_service)):
+	return await _service.get_all()
 
 @router.post('/')
 async def create_reservations(table: dict):

@@ -27,3 +27,12 @@ class ReservationService:
 			return create_reservation
 		except SQLAlchemyError as e:
 			raise HTTPException(status_code=500, detail='Failed to create reservation')
+		
+	async def delete(self, id: int):
+		try:
+			reservation = await self.repo.get(id)
+			if not reservation:
+				raise HTTPException(status_code=404, detail='Reservation not found')
+			return await self.repo.delete(reservation)
+		except SQLAlchemyError as e:
+			raise HTTPException(status_code=500, detail='Failed to delete reservation')

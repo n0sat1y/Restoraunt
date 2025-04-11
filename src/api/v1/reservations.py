@@ -17,5 +17,6 @@ async def create_reservations(
 	return await _service.create(reservation)
 
 @router.delete('/{id}')
-async def delete_reservations(id: int):
-	return {"message": "reservations deleted", "id": id}
+async def delete_reservations(id: int, _service=Depends(get_reservation_service)):
+	await _service.delete(id)
+	return {'message': 'Reservation deleted successfully'}

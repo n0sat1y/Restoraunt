@@ -10,4 +10,4 @@ class TableModel(Base):
 	seats: Mapped[int] = mapped_column(nullable=False)
 	location: Mapped[str] = mapped_column(nullable=False)
 
-	reservations: Mapped[list["ReservationModel"]] = relationship(back_populates="table")
+	reservations: Mapped[list["ReservationModel"]] = relationship(back_populates="table", cascade='all, delete', passive_deletes=True)

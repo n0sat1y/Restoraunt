@@ -18,5 +18,8 @@ def get_reservation_repository(session: SessionDep):
 def get_table_service(repo = Depends(get_table_repository)):
 	return TableService(repo=repo)
 
-def get_reservation_service(repo = Depends(get_reservation_repository)):
-	return ReservationService(repo=repo)
+def get_reservation_service(
+	repo = Depends(get_reservation_repository), 
+	table_repo = Depends(get_table_repository)
+):
+	return ReservationService(repo=repo, table_repo=table_repo)

@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import select, and_
+from sqlalchemy import DateTime, cast, select, and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models import ReservationModel
@@ -34,14 +34,26 @@ class ReservationRepository:
 		duration_minutes: int
 	):
 		try:
+			start_time = ReservationModel.reservation_time
+			calculated_end_time_expression = start_time + timedelta(minutes=1) * ReservationModel.duration_minutes
+			end_time = cast(calculated_end_time_expression, DateTime(timezone=True))
 			query = (
 				select(ReservationModel).
 				where(ReservationModel.table_id == table_id).
 				filter(
-					ReservationModel.reservation_time + timedelta(minutes=ReservationModel.duration_minutes) >= reservation_time, 
-					ReservationModel.reservation_time <= reservation_time + timedelta(minutes=duration_minutes)
+					or_(
+						and_(
+							end_time > reservation_time,
+							end_time <= reservation_time + timedelta(minutes=duration_minutes)
+						),
+						and_(
+							start_time >= reservation_time,
+							start_time < reservation_time + timedelta(minutes=duration_minutes)
+						)
+					)
 				)
 			)
+			
 			result = await self.session.execute(query)
 			tables = result.scalars().all()
 			return tables
@@ -63,4 +75,4 @@ class ReservationRepository:
 			await self.session.commit()
 			return None
 		except SQLAlchemyError as e:
-			raise 
+			raise
